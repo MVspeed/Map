@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта</title>
+    <style>
+        /* Основной контейнер карты */
+        #map {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: url('img.jpg') no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Стиль маркеров */
+        .marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgb(255, 0, 191);
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Панель информации */
+        #info-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            font-size: 18px;
+        }
+
+        #info-panel h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #info-panel img {
+            width: 100%;
+            margin-top: 15px;
+            display: none; /* По умолчанию скрыто */
+        }
+
+        /* Координаты маркеров */
+        #lenin { top: 50%; left: 60%; }      /* Мавзолей Ленина */
+        #gum { top: 32%; left: 64%; }        /* ГУМ */
+        #sobor { top: 75%; left: 78%; }      /* Собор Василия Блаженного */
+        #spasskaya { top: 65%; left: 66%; }  /* Спасская башня */
+        #kazanskiy { top: 17%; left: 48%; }  /* Казанский собор */
+        #kolokol { top: 90%; left: 55%; }    /* Колокольня Ивана Великого */
+        #blago { top: 85%; left: 47%; }      /* Благовещенский собор */
+        #uspensk { top: 96%; left: 44%; }    /* Успенский собор */
+
+        /* Адаптация для мобильных устройств */
+        @media (max-width: 768px) {
+            #info-panel {
+                width: 100%;
+                height: 50%;
+                bottom: -50%;
+                right: 0;
+                transition: bottom 0.3s ease;
+            }
+
+            #info-panel.show {
+                bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Карта -->
+    <div id="map">
+        <!-- Маркеры для каждой достопримечательности с подробными описаниями -->
+        <div id="lenin" class="marker" 
+             data-title="Мавзолей Ленина" 
+             data-description="Мавзолей Ленина — известная усыпальница на Красной площади в Москве, где с 1924 года покоится тело Владимира Ильича Ленина, лидера Октябрьской революции и основателя советского государства. Мавзолей выполнен в стиле конструктивизма по проекту архитектора А. В. Щусева. Здание мавзолея стало культовым символом и частью исторического наследия Советского Союза." 
+             data-image="lenin.jpeg"></div>
+             
+        <div id="gum" class="marker" 
+             data-title="ГУМ" 
+             data-description="ГУМ — главный универсальный магазин на Красной площади, построенный в 1893 году в стиле русской неоклассики. Здание отличается уникальной архитектурой, изысканными витринами и стеклянными куполами, охватывающими трехэтажный торговый комплекс. ГУМ является не только торговым, но и культурным центром, где проводятся выставки и мероприятия." 
+             data-image="GUM.jpeg"></div>
+             
+        <div id="sobor" class="marker" 
+             data-title="Собор Василия Блаженного" 
+             data-description="Собор Василия Блаженного — уникальный храм на Красной площади, построенный в 1555–1561 годах по приказу Ивана Грозного в честь взятия Казани. Храм состоит из девяти разноцветных куполов, представляющих собой отдельные часовни, каждая из которых символизирует важные победы русской армии. Архитектура собора сочетает в себе элементы русского и византийского стилей, что делает его одним из самых узнаваемых символов России." 
+             data-image="sobor.jpeg"></div>
+             
+        <div id="spasskaya" class="marker" 
+             data-title="Спасская башня" 
+             data-description="Спасская башня — одна из самых известных башен Московского Кремля, построенная в 1491 году итальянским архитектором Пьетро Антонио Солари. Башня известна своими курантами — часами, которые ежедневно отмеряют точное время и бьют в полдень. Спасская башня служила главным въездом в Кремль и символизирует древнюю историю России." 
+             data-image="bashnya.jpeg"></div>
+             
+        <div id="kazanskiy" class="marker" 
+             data-title="Собор Казанской иконы Божией Матери" 
+             data-description="Собор Казанской иконы Божией Матери — православный храм, расположенный на Красной площади. Построен в честь победы над польскими интервентами в 1612 году. Храм был разрушен в советское время, но восстановлен в 1993 году. Собор является важной святыней для православных верующих, поскольку в нем хранится копия Казанской иконы Божией Матери." 
+             data-image="soborkazan.jpeg"></div>
+             
+        <div id="kolokol" class="marker" 
+             data-title="Колокольня Ивана Великого" 
+             data-description="Колокольня Ивана Великого — одна из самых высоких исторических построек Кремля, достигающая 81 метра в высоту. Построенная в 1505–1508 годах, колокольня служила сторожевой башней и одновременно храмом. Здесь находятся уникальные колокола, крупнейший из которых — Успенский колокол весом 65 тонн. В течение многих лет колокольня была самой высокой постройкой в Москве, олицетворяя духовное могущество России." 
+             data-image="soborvani.jpeg"></div>
+             
+        <div id="blago" class="marker" 
+             data-title="Благовещенский собор" 
+             data-description="Благовещенский собор — старинный храм в Кремле, построенный в 1484–1489 годах. Первоначально это была домовая церковь московских князей и царей, украшенная фресками и иконами, написанными мастерами, такими как Феофан Грек и Андрей Рублев. Собор с девятью золотыми куполами и уникальным интерьером является важным памятником древнерусского искусства." 
+             data-image="blago.jpeg"></div>
+             
+        <div id="uspensk" class="marker" 
+             data-title="Успенский собор" 
+             data-description="Успенский собор Московского Кремля был построен в 1475–1479 годах по проекту итальянского архитектора Аристотеля Фиораванти. Это главное место для коронации русских царей и одно из важнейших духовных центров страны. Собор славится своими массивными стенами, золотыми куполами и древними фресками. На протяжении веков он оставался символом российской духовной мощи." 
+             data-image="uspensk.jpeg"></div>
+    </div>
+
+    <!-- Панель информации -->
+    <div id="info-panel">
+        <h2 id="info-title"></h2>
+        <p id="info-description"></p>
+        <img id="info-image" src="" alt="Image">
+    </div>
+
+    <script>
+        const infoPanel = document.getElementById('info-panel');
+        const infoTitle = document.getElementById('info-title');
+        const infoDescription = document.getElementById('info-description');
+        const infoImage = document.getElementById('info-image');
+
+        // Функция отображения информации
+        function showInfo(title, description, imageUrl) {
+            infoTitle.innerText = title;
+            infoDescription.innerText = description;
+
+            // Показываем изображение, если есть URL
+            if (imageUrl) {
+                infoImage.src = imageUrl;
+                infoImage.style.display = 'block';
+            } else {
+                infoImage.style.display = 'none';
+            }
+
+            if (window.innerWidth <= 768) {
+                infoPanel.classList.add('show');
+            } else {
+                infoPanel.style.right = '0';
+            }
+        }
+
+        // Функция скрытия панели
+        function hideInfo() {
+            if (window.innerWidth <= 768) {
+                infoPanel.classList.remove('show');
+            } else {
+                infoPanel.style.right = '-400px';
+            }
+        }
+
+        // Добавляем обработчики событий для маркеров
+        document.querySelectorAll('.marker').forEach(marker => {
+            marker.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const title = marker.getAttribute('data-title');
+                const description = marker.getAttribute('data-description');
+                const imageUrl = marker.getAttribute('data-image');
+                showInfo(title, description, imageUrl);
+            });
+        });
+
+        // Закрываем панель при клике по карте
+        document.addEventListener('click', () => {
+            hideInfo();
+        });
+
+        // Останавливаем всплытие события клика на панели
+        infoPanel.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+    </script>
+</body>
+</html>
